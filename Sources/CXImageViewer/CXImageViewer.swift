@@ -15,49 +15,65 @@ public struct CXImageViewer: UIViewRepresentable {
     
     @Binding private var image: UIImage?
     
-    private var maxZoomLevel = CXImageViewerView.minZoomLevel
+    /// Combine using with index, this will be used to handle reset zoom
+    /// after the index switched
+    @Binding private var currentIndex: Int?
     
-    private var zoomOutPublisher: AnyPublisher<Void, Never>?
-    @State var cancellable: AnyCancellable?
-
+    private var maxZoomLevel = CXImageViewerView.minZoomLevel
+    private var index: Int
     
     // MARK: - Initializer
     
-    public init(image: Binding<UIImage?>,
-                zoomOutPublisher: AnyPublisher<Void, Never>? = nil) {
+    public init(image: Binding<UIImage?>, at index: Int = 0) {
         self._image = image
-        self.zoomOutPublisher = zoomOutPublisher
+        self.index = index
+        self._currentIndex = .constant(0)
     }
     
     // MARK: - Overrides
     
     public func makeUIView(context: Context) -> CXImageViewerView {
-        let imageViewer = CXImageViewerView()
-        
-        if let publisher = zoomOutPublisher {
-            cancellable = publisher.sink { _ in
-                imageViewer.resetZoom()
-            }
-        }
-        
-        return imageViewer
+        return CXImageViewerView()
     }
     
     public func updateUIView(_ uiView: CXImageViewerView, context: Context) {
         uiView.image = image
         uiView.maximumZoomScale = maxZoomLevel
+        zoomOutIfNeeded(viewer: uiView)
     }
     
     public static func dismantleUIView(_ uiView: CXImageViewerView, coordinator: ()) {
-        uiView.resetZoom()
+        uiView.resetZoom(animated: false)
         uiView.image = nil
+    }
+    
+    // MARK: - Private methods
+    
+    private func zoomOutIfNeeded(viewer: CXImageViewerView) {
+        guard index != currentIndex,
+              viewer.zoomScale > CXImageViewerView.minZoomLevel else {
+            return
+        }
+        viewer.resetZoom(animated: false)
     }
 }
 
 extension CXImageViewer {
-    public func maxZoomLevel(_ maxZoomLevel: CGFloat) -> CXImageViewer {
+    public func maxZoomLevel(_ maxZoomLevel: CGFloat) -> Self {
         var imageViewer = self
         imageViewer.maxZoomLevel = maxZoomLevel
+        return imageViewer
+    }
+    
+    public func index(_ index: Int) -> Self {
+        var imageViewer = self
+        imageViewer.index = index
+        return imageViewer
+    }
+    
+    public func currentIndex(_ currentIndex: Binding<Int?>) -> Self {
+        var imageViewer = self
+        imageViewer._currentIndex = currentIndex
         return imageViewer
     }
 }
