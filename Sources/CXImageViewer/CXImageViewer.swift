@@ -14,15 +14,13 @@ public struct CXImageViewer: UIViewRepresentable {
     // MARK: - Private properties
     
     @Binding private var image: UIImage?
-    @Binding private var zoomLevel: CGFloat
     
     private var maxZoomLevel = CXImageViewerView.minZoomLevel
     
     // MARK: - Initializer
     
-    public init(image: Binding<UIImage?>, zoomLevel: Binding<CGFloat>) {
+    public init(image: Binding<UIImage?>) {
         self._image = image
-        self._zoomLevel = zoomLevel
     }
     
     // MARK: - Overrides
