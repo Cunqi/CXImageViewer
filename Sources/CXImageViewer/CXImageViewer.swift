@@ -17,16 +17,30 @@ public struct CXImageViewer: UIViewRepresentable {
     
     private var maxZoomLevel = CXImageViewerView.minZoomLevel
     
+    private var zoomOutPublisher: AnyPublisher<Void, Never>?
+    @State var cancellable: AnyCancellable?
+
+    
     // MARK: - Initializer
     
-    public init(image: Binding<UIImage?>) {
+    public init(image: Binding<UIImage?>,
+                zoomOutPublisher: AnyPublisher<Void, Never>? = nil) {
         self._image = image
+        self.zoomOutPublisher = zoomOutPublisher
     }
     
     // MARK: - Overrides
     
     public func makeUIView(context: Context) -> CXImageViewerView {
-        CXImageViewerView()
+        let imageViewer = CXImageViewerView()
+        
+        if let publisher = zoomOutPublisher {
+            cancellable = publisher.sink { _ in
+                imageViewer.resetZoom()
+            }
+        }
+        
+        return imageViewer
     }
     
     public func updateUIView(_ uiView: CXImageViewerView, context: Context) {
