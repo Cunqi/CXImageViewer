@@ -1,5 +1,5 @@
 //
-//  CXImageViewerModifier.swift
+//  CXImageViewer.swift
 //
 //
 //  Created by Cunqi Xiao on 4/27/24.
