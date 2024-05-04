@@ -6,6 +6,11 @@ import UIKit
 //
 //  Created by Cunqi Xiao on 4/27/24.
 //
+
+public protocol CXImageViewerViewDelegate: AnyObject {
+    func imageViewer(didZoom view: CXImageViewerView, isZooming: Bool)
+}
+
 public class CXImageViewerView: UIScrollView {
     
     // MARK: - Constants
@@ -28,6 +33,8 @@ public class CXImageViewerView: UIScrollView {
             setupImageView(with: image)
         }
     }
+    
+    public weak var viewerDelegate: CXImageViewerViewDelegate?
     
     // MARK: - Private properties
     
@@ -175,8 +182,8 @@ public class CXImageViewerView: UIScrollView {
         return zoomedRect.intersection(zoomedTargetRect)
     }
     
-    private func animate(_ actions: @escaping () -> Void) {
-        UIView.animate(withDuration: Self.zoomAnimationDuration, animations: actions)
+    private func animate(_ actions: @escaping () -> Void, completion: @escaping (Bool) -> Void = { _ in }) {
+        UIView.animate(withDuration: Self.zoomAnimationDuration, animations: actions, completion: completion)
     }
 }
 
@@ -204,6 +211,11 @@ extension CXImageViewerView: UIScrollViewDelegate {
             }
             
             scrollView.contentSize = imageView.frame.size
+        } completion: { [weak self] _ in
+            guard let self else {
+                return
+            }
+            viewerDelegate?.imageViewer(didZoom: self, isZooming: scale > minimumZoomScale)
         }
     }
 }

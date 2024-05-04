@@ -18,6 +18,7 @@ public struct CXImageViewer: UIViewRepresentable {
     /// Combine using with index, this will be used to handle reset zoom
     /// after the index switched
     @Binding private var currentIndex: Int?
+    @Binding private var isZooming: Bool
     
     private var maxZoomLevel = CXImageViewerView.minZoomLevel
     private var index: Int
@@ -28,12 +29,15 @@ public struct CXImageViewer: UIViewRepresentable {
         self._image = image
         self.index = index
         self._currentIndex = .constant(0)
+        self._isZooming = .constant(false)
     }
     
     // MARK: - Overrides
     
     public func makeUIView(context: Context) -> CXImageViewerView {
-        return CXImageViewerView()
+        let viewer = CXImageViewerView()
+        viewer.viewerDelegate = context.coordinator
+        return viewer
     }
     
     public func updateUIView(_ uiView: CXImageViewerView, context: Context) {
@@ -59,6 +63,31 @@ public struct CXImageViewer: UIViewRepresentable {
 }
 
 extension CXImageViewer {
+    public class Coordinator: NSObject, CXImageViewerViewDelegate {
+        
+        // MARK: - Internal properties
+        
+        var parent: CXImageViewer
+        
+        // MARK: - Initializer
+        
+        init(parent: CXImageViewer) {
+            self.parent = parent
+        }
+        
+        // MARK: - CXImageViewerViewDelegate
+        
+        public func imageViewer(didZoom view: CXImageViewerView, isZooming: Bool) {
+            parent.isZooming = isZooming
+        }
+    }
+    
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+}
+
+extension CXImageViewer {
     public func maxZoomLevel(_ maxZoomLevel: CGFloat) -> Self {
         var imageViewer = self
         imageViewer.maxZoomLevel = maxZoomLevel
@@ -74,6 +103,12 @@ extension CXImageViewer {
     public func currentIndex(_ currentIndex: Binding<Int?>) -> Self {
         var imageViewer = self
         imageViewer._currentIndex = currentIndex
+        return imageViewer
+    }
+    
+    public func isZooming(_ isZooming: Binding<Bool>) -> Self {
+        var imageViewer = self
+        imageViewer._isZooming = isZooming
         return imageViewer
     }
 }
