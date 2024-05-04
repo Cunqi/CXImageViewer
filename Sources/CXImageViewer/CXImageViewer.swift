@@ -54,11 +54,11 @@ public struct CXImageViewer: UIViewRepresentable {
     // MARK: - Private methods
     
     private func zoomOutIfNeeded(viewer: CXImageViewerView) {
-        guard index != currentIndex,
-              viewer.zoomScale > CXImageViewerView.minZoomLevel else {
-            return
+        if index != currentIndex, viewer.isZoomed {
+            viewer.resetZoom(animated: false)
+        } else if index == currentIndex, viewer.isZoomed, !isZooming {
+            viewer.resetZoom(animated: true)
         }
-        viewer.resetZoom(animated: false)
     }
 }
 

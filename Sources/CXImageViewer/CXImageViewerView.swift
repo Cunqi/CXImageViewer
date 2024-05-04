@@ -34,6 +34,10 @@ public class CXImageViewerView: UIScrollView {
         }
     }
     
+    public var isZoomed: Bool {
+        zoomScale > minimumZoomScale
+    }
+    
     public weak var viewerDelegate: CXImageViewerViewDelegate?
     
     // MARK: - Private properties
