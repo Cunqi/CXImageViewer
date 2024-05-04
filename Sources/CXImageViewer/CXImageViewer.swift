@@ -20,7 +20,6 @@ public struct CXImageViewer: UIViewRepresentable {
     @Binding private var currentIndex: Int?
     @Binding private var isZooming: Bool
     
-    private var maxZoomLevel = CXImageViewerView.minZoomLevel
     private var index: Int
     
     // MARK: - Initializer
@@ -42,7 +41,6 @@ public struct CXImageViewer: UIViewRepresentable {
     
     public func updateUIView(_ uiView: CXImageViewerView, context: Context) {
         uiView.image = image
-        uiView.maximumZoomScale = maxZoomLevel
         zoomOutIfNeeded(viewer: uiView)
     }
     
@@ -88,12 +86,6 @@ extension CXImageViewer {
 }
 
 extension CXImageViewer {
-    public func maxZoomLevel(_ maxZoomLevel: CGFloat) -> Self {
-        var imageViewer = self
-        imageViewer.maxZoomLevel = maxZoomLevel
-        return imageViewer
-    }
-    
     public func index(_ index: Int) -> Self {
         var imageViewer = self
         imageViewer.index = index

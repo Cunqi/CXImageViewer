@@ -91,8 +91,6 @@ public class CXImageViewerView: UIScrollView {
         imageView.image?.size ?? .init(1.0) // Avoid divide 0 crash
     }
     
-    // MARK: - Initializer
-    
     // MARK: - Public methods
     
     /// Reset the image viewer to the initial state
@@ -113,6 +111,7 @@ public class CXImageViewerView: UIScrollView {
     private func setupImageView(with image: UIImage) {
         setupMandantoryConfig()
         imageView.image = image
+        maximumZoomScale = makeMaximumZoomScale()
     }
     
     private func setupMandantoryConfig() {
@@ -125,6 +124,16 @@ public class CXImageViewerView: UIScrollView {
         if imageView.superview == nil {
             addSubview(imageView)
         }
+    }
+    
+    private func makeMaximumZoomScale() -> CGFloat {
+        let multiplier: CGFloat
+        if imageOnScreenInitialSize.width < viewerSize.width {
+            multiplier = viewerSize.width / imageOnScreenInitialSize.width
+        } else {
+            multiplier = viewerSize.height / imageOnScreenInitialSize.height
+        }
+        return max(multiplier, Self.maxZoomLevel)
     }
     
     @objc
