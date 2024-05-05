@@ -94,7 +94,7 @@ public class CXImageViewerView: UIScrollView {
     // MARK: - Public methods
     
     /// Reset the image viewer to the initial state
-    public func resetZoom(animated: Bool) {
+    public func resetZoom(animated: Bool, completion: @escaping (Bool) -> Void = {_ in }) {
         let actions = { [unowned self] in
             zoomScale = minimumZoomScale
             imageView.frame = CGRect(origin: .zero, size: viewerSize)
@@ -102,7 +102,12 @@ public class CXImageViewerView: UIScrollView {
             contentOffset = .zero
         }
         
-        animated ? animate(actions) : actions()
+        if animated {
+            animate(actions, completion: completion)
+        } else {
+            actions()
+            completion(true)
+        }
     }
     
     
@@ -139,7 +144,12 @@ public class CXImageViewerView: UIScrollView {
     @objc
     private func handleDoubleTapGesture(_ recognizer: UIGestureRecognizer) {
         if contentSize > viewerSize {
-            resetZoom(animated: true)
+            resetZoom(animated: true) { [weak self] _ in
+                guard let self else {
+                    return
+                }
+                viewerDelegate?.imageViewer(didZoom: self, isZooming: isZoomed)
+            }
         } else {
             zoomInOnDoubleTapped(location: recognizer.location(in: imageView))
         }
