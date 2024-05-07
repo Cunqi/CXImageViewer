@@ -40,6 +40,8 @@ public class CXImageViewerView: UIScrollView {
     
     public weak var viewerDelegate: CXImageViewerViewDelegate?
     
+    public var doubleTapToZoomIn: Bool = true
+    
     // MARK: - Private properties
     
     private lazy var imageView: UIImageView = {
@@ -150,7 +152,7 @@ public class CXImageViewerView: UIScrollView {
                 }
                 viewerDelegate?.imageViewer(didZoom: self, isZooming: isZoomed)
             }
-        } else {
+        } else if doubleTapToZoomIn {
             zoomInOnDoubleTapped(location: recognizer.location(in: imageView))
         }
     }

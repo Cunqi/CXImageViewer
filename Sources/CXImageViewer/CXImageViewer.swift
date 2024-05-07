@@ -21,6 +21,7 @@ public struct CXImageViewer: UIViewRepresentable {
     @Binding private var isZooming: Bool
     
     private var index: Int
+    private var doubleTapToZoomIn = true
     
     // MARK: - Initializer
     
@@ -41,6 +42,7 @@ public struct CXImageViewer: UIViewRepresentable {
     
     public func updateUIView(_ uiView: CXImageViewerView, context: Context) {
         uiView.image = image
+        uiView.doubleTapToZoomIn = doubleTapToZoomIn
         zoomOutIfNeeded(viewer: uiView)
     }
     
@@ -101,6 +103,12 @@ extension CXImageViewer {
     public func isZooming(_ isZooming: Binding<Bool>) -> Self {
         var imageViewer = self
         imageViewer._isZooming = isZooming
+        return imageViewer
+    }
+    
+    public func doubleTapToZoomIn(_ enabled: Bool) -> Self {
+        var imageViewer = self
+        imageViewer.doubleTapToZoomIn = enabled
         return imageViewer
     }
 }
