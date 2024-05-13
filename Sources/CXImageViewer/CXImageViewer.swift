@@ -13,8 +13,6 @@ public struct CXImageViewer: UIViewRepresentable {
     
     // MARK: - Private properties
     
-    @Binding private var image: UIImage?
-    
     /// Combine using with index, this will be used to handle reset zoom
     /// after the index switched
     @Binding private var currentIndex: Int?
@@ -22,11 +20,12 @@ public struct CXImageViewer: UIViewRepresentable {
     
     private var index: Int
     private var doubleTapToZoomIn = true
+    private let image: UIImage?
     
     // MARK: - Initializer
     
-    public init(image: Binding<UIImage?>, at index: Int = 0) {
-        self._image = image
+    public init(image: UIImage?, at index: Int = 0) {
+        self.image = image
         self.index = index
         self._currentIndex = .constant(0)
         self._isZooming = .constant(false)
