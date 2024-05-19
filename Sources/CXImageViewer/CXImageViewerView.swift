@@ -112,6 +112,10 @@ public class CXImageViewerView: UIScrollView {
         }
     }
     
+    public func clear() {
+        imageView.image = nil
+    }
+    
     
     // MARK: - Private methods
     

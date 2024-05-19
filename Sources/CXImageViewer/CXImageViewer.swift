@@ -18,9 +18,10 @@ public struct CXImageViewer: UIViewRepresentable {
     @Binding private var currentIndex: Int?
     @Binding private var isZooming: Bool
     
+    private var image: UIImage?
     private var index: Int
     private var doubleTapToZoomIn = true
-    private let image: UIImage?
+    
     
     // MARK: - Initializer
     
@@ -45,9 +46,9 @@ public struct CXImageViewer: UIViewRepresentable {
         zoomOutIfNeeded(viewer: uiView)
     }
     
-    public static func dismantleUIView(_ uiView: CXImageViewerView, coordinator: ()) {
-        uiView.resetZoom(animated: false)
-        uiView.image = nil
+    public static func dismantleUIView(_ uiView: CXImageViewerView, coordinator: Coordinator) {
+        print("[CXImageViewer] Dismantle UIView")
+        uiView.clear()
     }
     
     // MARK: - Private methods
