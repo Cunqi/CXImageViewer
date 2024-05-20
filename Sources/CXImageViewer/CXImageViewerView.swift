@@ -42,6 +42,17 @@ public class CXImageViewerView: UIScrollView {
     
     public var doubleTapToZoomIn: Bool = true
     
+    // MARK: - Initializers
+    
+    public init() {
+        super.init(frame: .zero)
+        addSubview(imageView)
+    }
+
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Private properties
     
     private lazy var imageView: UIImageView = {
@@ -96,12 +107,19 @@ public class CXImageViewerView: UIScrollView {
     // MARK: - Public methods
     
     /// Reset the image viewer to the initial state
-    public func resetZoom(animated: Bool, completion: @escaping (Bool) -> Void = {_ in }) {
+    public func resetZoom(animated: Bool) {
         let actions = { [unowned self] in
             zoomScale = minimumZoomScale
             imageView.frame = CGRect(origin: .zero, size: viewerSize)
             contentSize = viewerSize
             contentOffset = .zero
+        }
+        
+        let completion: (Bool) -> Void = { [weak self] _ in
+            guard let self else {
+                return
+            }
+            viewerDelegate?.imageViewer(didZoom: self, isZooming: false)
         }
         
         if animated {
@@ -150,12 +168,7 @@ public class CXImageViewerView: UIScrollView {
     @objc
     private func handleDoubleTapGesture(_ recognizer: UIGestureRecognizer) {
         if contentSize > viewerSize {
-            resetZoom(animated: true) { [weak self] _ in
-                guard let self else {
-                    return
-                }
-                viewerDelegate?.imageViewer(didZoom: self, isZooming: isZoomed)
-            }
+            resetZoom(animated: true)
         } else if doubleTapToZoomIn {
             zoomInOnDoubleTapped(location: recognizer.location(in: imageView))
         }
@@ -187,6 +200,11 @@ public class CXImageViewerView: UIScrollView {
             imageView.frame = zoomedRect
             contentSize = zoomedSize
             scrollRectToVisible(zoomedVisibleRect, animated: false)
+        } completion: { [weak self] _ in
+            guard let self else {
+                return
+            }
+            viewerDelegate?.imageViewer(didZoom: self, isZooming: true)
         }
     }
     
