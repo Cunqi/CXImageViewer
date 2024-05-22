@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CXImageViewer",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v15)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -14,11 +14,15 @@ let package = Package(
             name: "CXImageViewer",
             targets: ["CXImageViewer"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/cunqixiao/Venus.git", branch: "master")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "CXImageViewer"),
+            name: "CXImageViewer",
+            dependencies: ["Venus"]),
         .testTarget(
             name: "CXImageViewerTests",
             dependencies: ["CXImageViewer"]),

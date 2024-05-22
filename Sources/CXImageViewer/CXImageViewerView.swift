@@ -1,11 +1,13 @@
-import UIKit
-
 //
 //  CXImageViewerView.swift
 //
 //
 //  Created by Cunqi Xiao on 4/27/24.
 //
+
+import UIKit
+
+import Venus
 
 public protocol CXImageViewerViewDelegate: AnyObject {
     func imageViewer(didZoom view: CXImageViewerView, isZooming: Bool)
@@ -82,7 +84,7 @@ public class CXImageViewerView: UIScrollView {
     /// Image origin size when loaded on screen, no zoomed, this will be used to
     /// calculate tap location and other information for zooming in/out
     private var imageOnScreenInitialSize: CGSize {
-        let ratio = imageSize.ratio
+        let ratio = imageSize.whRatio
         
         if (viewerSize.width / ratio) <= viewerSize.height {
             return CGSize(width: viewerSize.width, height: viewerSize.width / ratio)
@@ -101,7 +103,7 @@ public class CXImageViewerView: UIScrollView {
     }
     
     private var imageSize: CGSize {
-        imageView.image?.size ?? .init(1.0) // Avoid divide 0 crash
+        imageView.image?.size ?? .square(1.0) // Avoid divide 0 crash
     }
     
     // MARK: - Public methods
