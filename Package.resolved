@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "olympus",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cunqixiao/Olympus.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "1cd26e7305d117220de447e7450d0b8a73355d8f"
+      }
+    },
+    {
+      "identity" : "venus",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cunqixiao/Venus.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "5e8cacd9f207f66f9c9bd2cee87399dfab2971ce"
+      }
+    }
+  ],
+  "version" : 2
+}

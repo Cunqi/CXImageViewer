@@ -5,6 +5,7 @@
 //  Created by Cunqi Xiao on 4/27/24.
 //
 
+import Combine
 import UIKit
 
 import Venus
@@ -49,6 +50,7 @@ public class CXImageViewerView: UIScrollView {
     public init() {
         super.init(frame: .zero)
         addSubview(imageView)
+        startObservingOrientationChanges()
     }
 
     public required init?(coder: NSCoder) {
@@ -106,6 +108,8 @@ public class CXImageViewerView: UIScrollView {
         imageView.image?.size ?? .square(1.0) // Avoid divide 0 crash
     }
     
+    private var cancelables = Set<AnyCancellable>()
+    
     // MARK: - Public methods
     
     /// Reset the image viewer to the initial state
@@ -133,11 +137,21 @@ public class CXImageViewerView: UIScrollView {
     }
     
     public func clear() {
+        resetZoom(animated: false)
         imageView.image = nil
     }
     
-    
     // MARK: - Private methods
+    
+    private func startObservingOrientationChanges() {
+        self.publisher(for: \.bounds)
+            .map { $0.size }
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.resetZoom(animated: true)
+            }
+            .store(in: &cancelables)
+    }
     
     private func setupImageView(with image: UIImage) {
         setupMandantoryConfig()
